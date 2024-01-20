@@ -27,7 +27,8 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public final XboxController driveJoy = new XboxController(0);
   public final XboxController opJoy = new XboxController(1);
-  public JoystickContainer joyStick1 = new JoystickContainer(driveJoy);
+  public JoystickContainer joyStick = new JoystickContainer(driveJoy,opJoy);
+  public ArmSubsystem arm = new ArmSubsystem();
   // public Pigeon2Handler pigeon = new Pigeon2Handler();
   // public SwerveDriveSubsystem swerveDrive = new SwerveDriveSubsystem(pigeon);
   public static double slowmult = 1;
@@ -68,15 +69,32 @@ public class RobotContainer {
   public RobotContainer() {
     
     // arm code go here
+     joyStick.opButton(1)
+    .onTrue(new InstantCommand(()->arm.setGoal(30)));
+
+
+     joyStick.opButton(2)
+    .onTrue(new InstantCommand(()->arm.setGoal(90)));
+
+    joyStick.opButton(3)
+    .onTrue(new InstantCommand(()->arm.setGoal(0)));
+
+
+  }
+  public void init(){
+   arm.enable();
+   arm.setGoal(0);
   }
 
   
 double MAX_RATE = 5.5; // m/s
 double R = Math.sqrt(.5);
+
   public void teleopPeriodic(){
     double speedRate = SmartDashboard.getNumber("SpeedRate", 0.3)* MAX_RATE;
     double turnRate = SmartDashboard.getNumber("TurnRate", 1)* MAX_RATE/R;
-   
+    SmartDashboard.putNumber("Arm Abs Enc", arm.getArmEncoderPos());
+
 
     //SmartDashboard.putNumber("driveJoyXR", getDriveJoyXR());
     SmartDashboard.putNumber("drivejoyYL", getDriveJoyYL());
