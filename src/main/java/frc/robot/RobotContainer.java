@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 
 /**
@@ -26,8 +27,9 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public final XboxController driveJoy = new XboxController(0);
   public final XboxController opJoy = new XboxController(1);
-  public Pigeon2Handler pigeon = new Pigeon2Handler();
-  public SwerveDriveSubsystem swerveDrive = new SwerveDriveSubsystem(pigeon);
+  public JoystickContainer joyStick1 = new JoystickContainer(driveJoy);
+  // public Pigeon2Handler pigeon = new Pigeon2Handler();
+  // public SwerveDriveSubsystem swerveDrive = new SwerveDriveSubsystem(pigeon);
   public static double slowmult = 1;
 
   public double getDriveJoy(int axis){
@@ -69,7 +71,6 @@ public class RobotContainer {
   }
 
   
-public JoystickButton AButton = new JoystickButton(driveJoy, 1);
 double MAX_RATE = 5.5; // m/s
 double R = Math.sqrt(.5);
   public void teleopPeriodic(){
@@ -87,9 +88,9 @@ double R = Math.sqrt(.5);
    
 
      //swerveDrive.drive(new ChassisSpeeds(xval, yval, spinval));
-    swerveDrive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xval, yval, spinval, pigeon.getAngleDeg()));
+    // swerveDrive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xval, yval, spinval, pigeon.getAngleDeg()));
 
-    AButton.onTrue(new InstantCommand(()->pigeon.zeroYaw()));
+    // AButton.onTrue(new InstantCommand(()->pigeon.zeroYaw()));
     
   }
 
