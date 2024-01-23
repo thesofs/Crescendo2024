@@ -70,20 +70,16 @@ public class RobotContainer {
     
     // arm code go here
      joyStick.opButton(1)
-    .onTrue(new InstantCommand(()->arm.setGoal(30)));
-
+    .onTrue(new InstantCommand(()->arm.setGoal(0)));
 
      joyStick.opButton(2)
-    .onTrue(new InstantCommand(()->arm.setGoal(90)));
-
-    joyStick.opButton(3)
-    .onTrue(new InstantCommand(()->arm.setGoal(0)));
+    .onTrue(new InstantCommand(()->arm.setGoal(60)));
 
 
   }
   public void init(){
-   arm.enable();
-   arm.setGoal(0);
+    arm.enable();
+    arm.setGoal(30);
   }
 
   

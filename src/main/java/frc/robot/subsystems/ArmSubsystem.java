@@ -18,7 +18,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
   public final RelativeEncoder encoder_arm = m_spark.getEncoder();
   public final CANSparkMax hand_spark = new CANSparkMax(21,MotorType.kBrushless);
   public final RelativeEncoder alternateEncoder;
-  private final double ENCODER_OFFSET = -1.416992;
+  //private final double ENCODER_OFFSET = -1.416992;
   //encoder_arm.setDistancePerPulse(1.0 / 360.0 * 2.0 * Math.PI * 1.5);
 
   
@@ -32,7 +32,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
         // The ProfiledPIDController used by the subsystem
         new ProfiledPIDController(
             0.2,
-            .3,
+            0.3,
             0,
             // The motion profile constraints
             new TrapezoidProfile.Constraints(200, 200)));
@@ -52,7 +52,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
 
  public double getArmEncoderPos(){ // arm deg
 
-   return (alternateEncoder.getPosition()-ENCODER_OFFSET)*18/74*360;
+   return (alternateEncoder.getPosition())*18/74*360; //Put encoder offset back in 
 
  }
 
