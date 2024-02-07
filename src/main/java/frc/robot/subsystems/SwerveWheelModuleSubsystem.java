@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.MathUtil;
@@ -170,14 +171,32 @@ public class SwerveWheelModuleSubsystem extends SubsystemBase {
       speedMotor.setIdleMode(IdleMode.kBrake);
   }
 
+  private double getSpeedMotorSpeed(){
+    return this.speedMotor.getEncoder().getVelocity()*GEAR_RATIO;
+  }
+
+  private double getSpeedMotorPosition(){
+    return this.speedMotor.getEncoder().getPosition()*GEAR_RATIO;
+  }
+
+
+  public SwerveModuleState getSwerveModuleState(){
+    double speed = getSpeedMotorSpeed();
+    Rotation2d angle = new Rotation2d(this.getPosition());
+    return new SwerveModuleState(speed,angle);
+  }
+
+  public SwerveModulePosition getSwerveModulePosition(){
+    double position = getSpeedMotorPosition();
+    Rotation2d angle =  new Rotation2d(this.getPosition());
+    return new SwerveModulePosition(position,angle);
+    
+  }
 //   public void resetSensor()
 //   {
 //       speedMotor.getSelectedSensorPosition(0);
 //   }
 
   
-//   public SwerveModulePosition getSwerveModulePosition()
-//   {
-//       return new SwerveModulePosition(getDistance(), new Rotation2d(getPositionRad()));
-//   }
+
 }

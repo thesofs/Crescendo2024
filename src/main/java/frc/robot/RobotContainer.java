@@ -4,16 +4,17 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 
 /**
@@ -27,9 +28,9 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public final XboxController driveJoy = new XboxController(0);
   public final XboxController opJoy = new XboxController(1);
-  public JoystickContainer joyStick1 = new JoystickContainer(driveJoy);
-  // public Pigeon2Handler pigeon = new Pigeon2Handler();
-  // public SwerveDriveSubsystem swerveDrive = new SwerveDriveSubsystem(pigeon);
+  public JoystickContainer joyStick1 = new JoystickContainer(driveJoy, opJoy);
+  public Pigeon2Handler pigeon = new Pigeon2Handler();
+  public SwerveDriveSubsystem swerveDrive = new SwerveDriveSubsystem(pigeon);
   public static double slowmult = 1;
 
   public double getDriveJoy(int axis){
@@ -66,6 +67,10 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    SwerveControllerCommand swerveController = new SwerveControllerCommand
+    (null, this.swerveDrive.getRobotPose(), new RamseteController(K_RAMSETE_B,K_RAMSETE_ZETA), null, null, null);
+
     
     
   }
@@ -93,6 +98,7 @@ double R = Math.sqrt(.5);
     // AButton.onTrue(new InstantCommand(()->pigeon.zeroYaw()));
     
   }
+
 
   /**
    * Use this method to define your trigger->command mappings. Triggers can be created via the

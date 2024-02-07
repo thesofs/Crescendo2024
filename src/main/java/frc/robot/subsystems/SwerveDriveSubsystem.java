@@ -75,16 +75,17 @@ public class SwerveDriveSubsystem extends SubsystemBase {
         kinematics = new SwerveDriveKinematics(backRightLocation, backLeftLocation, frontRightLocation, frontLeftLocation);
         speeds = new ChassisSpeeds(0, 0, 0);
         this.pigeon = pigeon;
-        // odometry = new SwerveDriveOdometry
-        //             (kinematics, 
 
-        //             pigeon.getAngleRad(), 
+        odometry = new SwerveDriveOdometry
+                    (kinematics, 
 
-        //             new SwerveModulePosition[] {
-        //                 backRight.getSwerveModulePosition(), 
-        //                 backLeft.getSwerveModulePosition(),
-        //                 frontRight.getSwerveModulePosition(),
-        //                 frontLeft.getSwerveModulePosition()});
+                    pigeon.getAngleRad(), 
+
+                    new SwerveModulePosition[] {
+                        backRight.getSwerveModulePosition(), 
+                        backLeft.getSwerveModulePosition(),
+                        frontRight.getSwerveModulePosition(),
+                        frontLeft.getSwerveModulePosition()});
 
         
     }
@@ -125,12 +126,12 @@ public class SwerveDriveSubsystem extends SubsystemBase {
         SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(speeds);
         setSwerveModuleStates(moduleStates);
 
-        // odometry.update(pigeon.getAngleRad(), 
-        //                 new SwerveModulePosition[] {
-        //                     backRight.getSwerveModulePosition(), 
-        //                     backLeft.getSwerveModulePosition(),
-        //                     frontRight.getSwerveModulePosition(),
-        //                     frontLeft.getSwerveModulePosition()});
+        odometry.update(pigeon.getAngleRad(), 
+                        new SwerveModulePosition[] {
+                            backRight.getSwerveModulePosition(), 
+                            backLeft.getSwerveModulePosition(),
+                            frontRight.getSwerveModulePosition(),
+                            frontLeft.getSwerveModulePosition()});
 
         // SmartDashboard.putNumber("PoseX", odometry.getPoseMeters().getX());
         // SmartDashboard.putNumber("Pose Y", odometry.getPoseMeters().getY());
