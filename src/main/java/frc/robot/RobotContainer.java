@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -65,11 +68,25 @@ public class RobotContainer {
   }
 
 
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
+    var thetaController =
+    new ProfiledPIDController(
+       K_P, 0, 0, Constants.K_THETA);
+thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+
     SwerveControllerCommand swerveController = new SwerveControllerCommand
-    (null, this.swerveDrive.getRobotPose(), new RamseteController(K_RAMSETE_B,K_RAMSETE_ZETA), null, null, null);
+    (null,
+     this.swerveDrive.getRobotPose(), 
+     swerveDrive.kinematics,
+     new PIDController(kPXControl, 0,0),
+     new PIDController(kPYControl, 0, 0),
+      thetaController,
+       swerveDrive::setSwerveModuleStates, 
+       swerveDrive);
 
     
     
