@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.MathUtil;
@@ -25,6 +26,7 @@ public class SwerveWheelModuleSubsystem extends SubsystemBase {
   double P = 0.00675;//0.000072;//0.000081;
   double I = 0.00001;//0.000007;
   double D = 0;//0.0000065;
+  double GEAR_RATIO = 2;
   //hard code in the actual values once we find them off of smartdashboard
 
   private CANSparkMax angleMotor;
@@ -124,9 +126,7 @@ public class SwerveWheelModuleSubsystem extends SubsystemBase {
  
   // this method outputs position of the encoder to the smartDashBoard, useful for
   // calibrating the encoder offsets
-//   public double getPosition() {
-//       return MathUtil.mod(angleEncoder.getAbsolutePosition() - encoderOffset, 360); 
-//   }
+
    
 
 
@@ -138,12 +138,12 @@ public class SwerveWheelModuleSubsystem extends SubsystemBase {
       return MathUtil.mod(angleEncoder.getAbsolutePosition().refresh().getValue()*2*Math.PI - encoderOffset, 360) * Math.PI / 180;
   }
 
-  // public double getDistance() {
-  //     if (motorName.equals("BR") || motorName.equals("FR")) {
-  //         return -(speedMotor.getSelectedSensorPosition() * Constants.WHEEL_CIRCUMFERENCE)/(2048 * Constants.L2_RATIO);
-  //     }
-  //     return (speedMotor.getSelectedSensorPosition() * Constants.WHEEL_CIRCUMFERENCE)/(2048 * Constants.L2_RATIO);
-  // }
+  public double getDistance() {
+      if (motorName.equals("BR") || motorName.equals("FR")) {
+          return -(speedMotor.getEncoder().getPosition()* Constants.WHEEL_CIRCUMFERENCE)/(2048 * Constants.L2_RATIO);
+      }
+      return (speedMotor.getEncoder().getPosition() * Constants.WHEEL_CIRCUMFERENCE)/(2048 * Constants.L2_RATIO);
+  }
 
   public void stop() {
       speedMotor.set(0);
@@ -170,14 +170,29 @@ public class SwerveWheelModuleSubsystem extends SubsystemBase {
       speedMotor.setIdleMode(IdleMode.kBrake);
   }
 
-//   public void resetSensor()
-//   {
-//       speedMotor.getSelectedSensorPosition(0);
-//   }
+  public void resetSensor()
+  {
+      speedMotor.getEncoder().setPosition(0);
+  }
+
+  private double getSpeedMotorSpeed(){
+    return this.speedMotor.getEncoder().getVelocity()*GEAR_RATIO;
+  }
+
+  private double getSpeedMotorPosition(){
+    return this.speedMotor.getEncoder().getPosition()*GEAR_RATIO;
+  }
 
   
-//   public SwerveModulePosition getSwerveModulePosition()
-//   {
-//       return new SwerveModulePosition(getDistance(), new Rotation2d(getPositionRad()));
-//   }
+  public SwerveModuleState getSwerveModuleState(){
+    double speed = getSpeedMotorSpeed();
+    Rotation2d angle = new Rotation2d(this.getPosition());
+    return new SwerveModuleState(speed,angle);
+  }
+  public SwerveModulePosition getSwerveModulePosition()
+  {
+    double position = getSpeedMotorPosition();
+    Rotation2d angle = new Rotation2d(this.getPosition());
+    return new SwerveModulePosition(position,angle);
+  }
 }

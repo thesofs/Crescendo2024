@@ -4,17 +4,31 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -27,9 +41,9 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public final XboxController driveJoy = new XboxController(0);
   public final XboxController opJoy = new XboxController(1);
-  public JoystickContainer joyStick1 = new JoystickContainer(driveJoy);
-  // public Pigeon2Handler pigeon = new Pigeon2Handler();
-  // public SwerveDriveSubsystem swerveDrive = new SwerveDriveSubsystem(pigeon);
+  public JoystickContainer joySticks = new JoystickContainer(driveJoy,opJoy);
+  public Pigeon2Handler pigeon = new Pigeon2Handler();
+  public SwerveDriveSubsystem swerveDrive = new SwerveDriveSubsystem(pigeon);
   public static double slowmult = 1;
 
   public double getDriveJoy(int axis){
@@ -63,11 +77,18 @@ public class RobotContainer {
     return raw;
   }
 
+  public Trajectory trajectory;
+  public Command m_autonomousCommand;
+  public SendableChooser<String> autoChooser = new SendableChooser<String>();
+
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+   
     
-    
+    joySticks.driveButton(1).onTrue(new InstantCommand(()->pigeon.zeroYaw()));
   }
 
   
@@ -87,10 +108,11 @@ double R = Math.sqrt(.5);
 
    
 
-     //swerveDrive.drive(new ChassisSpeeds(xval, yval, spinval));
-    // swerveDrive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xval, yval, spinval, pigeon.getAngleDeg()));
+    //  swerveDrive.drive(new ChassisSpeeds(xval, yval, spinval));
+    swerveDrive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xval, yval, spinval, pigeon.getAngleDeg()));
 
-    // AButton.onTrue(new InstantCommand(()->pigeon.zeroYaw()));
+  
+
     
   }
 
@@ -110,4 +132,50 @@ double R = Math.sqrt(.5);
     // default;
     return output;
    }
+
+   public Command pathFollow(String trajectoryJSON, boolean multiPath){
+
+     double kPXControl = 1; //change
+    double kPYControl = 1; //change
+    var thetaController = new ProfiledPIDController(Constants.K_P, 0, 0, Constants.K_THETA);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+
+    try {
+      Path testTrajectory = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+      trajectory = TrajectoryUtil.fromPathweaverJson(testTrajectory);
+    } catch (final IOException ex) {
+  
+  
+      DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+    }
+    //m_drivebase.m_gyro.reset();
+
+     
+
+    SwerveControllerCommand swerveController = new SwerveControllerCommand(
+    trajectory,
+    swerveDrive.getRobotPose(), 
+    swerveDrive.getKinematics(),
+    new PIDController(kPXControl, 0, 0),
+    new PIDController(kPYControl, 0, 0),
+    thetaController,
+    swerveDrive::setSwerveModuleStates,
+    swerveDrive);
+
+
+
+    
+    // Run path following command, then stop at the end.
+    // Robot.m_robotContainer.m_driveAuto.m_drive.feed();
+    //m_drivebase.resetOdometry(trajectory.getInitialPose());
+    
+    if (!multiPath){
+      swerveDrive.resetPose();
+    } 
+    return swerveController;
+  }
+
+
+
 }

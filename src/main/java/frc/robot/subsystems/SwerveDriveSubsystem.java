@@ -75,16 +75,16 @@ public class SwerveDriveSubsystem extends SubsystemBase {
         kinematics = new SwerveDriveKinematics(backRightLocation, backLeftLocation, frontRightLocation, frontLeftLocation);
         speeds = new ChassisSpeeds(0, 0, 0);
         this.pigeon = pigeon;
-        // odometry = new SwerveDriveOdometry
-        //             (kinematics, 
+        odometry = new SwerveDriveOdometry
+                    (kinematics, 
 
-        //             pigeon.getAngleRad(), 
+                    pigeon.getAngleRad(), 
 
-        //             new SwerveModulePosition[] {
-        //                 backRight.getSwerveModulePosition(), 
-        //                 backLeft.getSwerveModulePosition(),
-        //                 frontRight.getSwerveModulePosition(),
-        //                 frontLeft.getSwerveModulePosition()});
+                    new SwerveModulePosition[] {
+                        backRight.getSwerveModulePosition(), 
+                        backLeft.getSwerveModulePosition(),
+                        frontRight.getSwerveModulePosition(),
+                        frontLeft.getSwerveModulePosition()});
 
         
     }
@@ -125,17 +125,17 @@ public class SwerveDriveSubsystem extends SubsystemBase {
         SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(speeds);
         setSwerveModuleStates(moduleStates);
 
-        // odometry.update(pigeon.getAngleRad(), 
-        //                 new SwerveModulePosition[] {
-        //                     backRight.getSwerveModulePosition(), 
-        //                     backLeft.getSwerveModulePosition(),
-        //                     frontRight.getSwerveModulePosition(),
-        //                     frontLeft.getSwerveModulePosition()});
+        odometry.update(pigeon.getAngleRad(), 
+                        new SwerveModulePosition[] {
+                            backRight.getSwerveModulePosition(), 
+                            backLeft.getSwerveModulePosition(),
+                            frontRight.getSwerveModulePosition(),
+                            frontLeft.getSwerveModulePosition()});
 
-        // SmartDashboard.putNumber("PoseX", odometry.getPoseMeters().getX());
-        // SmartDashboard.putNumber("Pose Y", odometry.getPoseMeters().getY());
-        // SmartDashboard.putNumber("Pose Theta", odometry.getPoseMeters().getRotation().getDegrees());
-        // SmartDashboard.putNumber("Pigeon Readings", pigeon.getAngleDeg().getDegrees());
+        SmartDashboard.putNumber("PoseX", odometry.getPoseMeters().getX());
+        SmartDashboard.putNumber("Pose Y", odometry.getPoseMeters().getY());
+        SmartDashboard.putNumber("Pose Theta", odometry.getPoseMeters().getRotation().getDegrees());
+        SmartDashboard.putNumber("Pigeon Readings", pigeon.getAngleDeg().getDegrees());
     }
 
     public void stop() {
@@ -161,39 +161,39 @@ public class SwerveDriveSubsystem extends SubsystemBase {
         
     }
 
-    //public Rotation2d getRobotAngle()
-    //{
-        //return pigeon.getAngleDeg();
-    //}
+    public Rotation2d getRobotAngle()
+    {
+        return pigeon.getAngleDeg();
+    }
 
     public void resetPose()
     {
-        // odometry.resetPosition(pigeon.getAngleRad(), 
-        //                         new SwerveModulePosition[] {
-        //                             backRight.getSwerveModulePosition(), 
-        //                             backLeft.getSwerveModulePosition(),
-        //                             frontRight.getSwerveModulePosition(),
-        //                             frontLeft.getSwerveModulePosition()},
-        //                         new Pose2d(0, 0, pigeon.getAngleRad()));
+        odometry.resetPosition(pigeon.getAngleRad(), 
+                                new SwerveModulePosition[] {
+                                    backRight.getSwerveModulePosition(), 
+                                    backLeft.getSwerveModulePosition(),
+                                    frontRight.getSwerveModulePosition(),
+                                    frontLeft.getSwerveModulePosition()},
+                                new Pose2d(0, 0, pigeon.getAngleRad()));
     }
 
     public void setPose(double x, double y, double heading)
     {
-        // odometry.resetPosition(pigeon.getAngleRad(), 
-        //                         new SwerveModulePosition[] {
-        //                             backRight.getSwerveModulePosition(), 
-        //                             backLeft.getSwerveModulePosition(),
-        //                             frontRight.getSwerveModulePosition(),
-        //                             frontLeft.getSwerveModulePosition()},
-        //                         new Pose2d(x, y, new Rotation2d(heading)));
+        odometry.resetPosition(pigeon.getAngleRad(), 
+                                new SwerveModulePosition[] {
+                                    backRight.getSwerveModulePosition(), 
+                                    backLeft.getSwerveModulePosition(),
+                                    frontRight.getSwerveModulePosition(),
+                                    frontLeft.getSwerveModulePosition()},
+                                new Pose2d(x, y, new Rotation2d(heading)));
     }
 
     public void resetSensors()
     {
-        // backLeft.resetSensor();
-        // backRight.resetSensor();
-        // frontLeft.resetSensor();
-        // frontRight.resetSensor();
+        backLeft.resetSensor();
+        backRight.resetSensor();
+        frontLeft.resetSensor();
+        frontRight.resetSensor();
     }
 
     public SwerveDriveKinematics getKinematics() {
