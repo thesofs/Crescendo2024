@@ -170,14 +170,6 @@ public class SwerveWheelModuleSubsystem extends SubsystemBase {
       speedMotor.setIdleMode(IdleMode.kBrake);
   }
 
-<<<<<<< HEAD
-  public void resetSensor()
-  {
-      speedMotor.getEncoder().setPosition(0);
-  }
-
-=======
->>>>>>> 05d8278a33cc9640189cc88bd715fe9f6b55d6a6
   private double getSpeedMotorSpeed(){
     return this.speedMotor.getEncoder().getVelocity()*GEAR_RATIO;
   }
@@ -185,21 +177,6 @@ public class SwerveWheelModuleSubsystem extends SubsystemBase {
   private double getSpeedMotorPosition(){
     return this.speedMotor.getEncoder().getPosition()*GEAR_RATIO;
   }
-<<<<<<< HEAD
-
-  
-  public SwerveModuleState getSwerveModuleState(){
-    double speed = getSpeedMotorSpeed();
-    Rotation2d angle = new Rotation2d(this.getPosition());
-    return new SwerveModuleState(speed,angle);
-  }
-  public SwerveModulePosition getSwerveModulePosition()
-  {
-    double position = getSpeedMotorPosition();
-    Rotation2d angle = new Rotation2d(this.getPosition());
-    return new SwerveModulePosition(position,angle);
-  }
-=======
 
 
   public SwerveModuleState getSwerveModuleState(){
@@ -221,5 +198,4 @@ public class SwerveWheelModuleSubsystem extends SubsystemBase {
 
   
 
->>>>>>> 05d8278a33cc9640189cc88bd715fe9f6b55d6a6
 }

@@ -75,20 +75,12 @@ public class SwerveDriveSubsystem extends SubsystemBase {
         kinematics = new SwerveDriveKinematics(backRightLocation, backLeftLocation, frontRightLocation, frontLeftLocation);
         speeds = new ChassisSpeeds(0, 0, 0);
         this.pigeon = pigeon;
-<<<<<<< HEAD
-        odometry = new SwerveDriveOdometry
-                    (kinematics, 
-
-                    pigeon.getAngleRad(), 
-
-=======
 
         odometry = new SwerveDriveOdometry
                     (kinematics, 
 
                     pigeon.getAngleRad(), 
 
->>>>>>> 05d8278a33cc9640189cc88bd715fe9f6b55d6a6
                     new SwerveModulePosition[] {
                         backRight.getSwerveModulePosition(), 
                         backLeft.getSwerveModulePosition(),
@@ -197,13 +189,6 @@ public class SwerveDriveSubsystem extends SubsystemBase {
                                 new Pose2d(x, y, new Rotation2d(heading)));
     }
 
-    public void resetSensors()
-    {
-        backLeft.resetSensor();
-        backRight.resetSensor();
-        frontLeft.resetSensor();
-        frontRight.resetSensor();
-    }
 
     public SwerveDriveKinematics getKinematics() {
         return kinematics;

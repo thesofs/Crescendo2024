@@ -4,36 +4,22 @@
 
 package frc.robot;
 
-<<<<<<< HEAD
 import java.io.IOException;
 import java.nio.file.Path;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
-=======
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
->>>>>>> 05d8278a33cc9640189cc88bd715fe9f6b55d6a6
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-<<<<<<< HEAD
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
-=======
->>>>>>> 05d8278a33cc9640189cc88bd715fe9f6b55d6a6
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -53,11 +39,7 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public final XboxController driveJoy = new XboxController(0);
   public final XboxController opJoy = new XboxController(1);
-<<<<<<< HEAD
   public JoystickContainer joySticks = new JoystickContainer(driveJoy,opJoy);
-=======
-  public JoystickContainer joyStick1 = new JoystickContainer(driveJoy, opJoy);
->>>>>>> 05d8278a33cc9640189cc88bd715fe9f6b55d6a6
   public Pigeon2Handler pigeon = new Pigeon2Handler();
   public SwerveDriveSubsystem swerveDrive = new SwerveDriveSubsystem(pigeon);
   public static double slowmult = 1;
@@ -103,21 +85,6 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    var thetaController =
-    new ProfiledPIDController(
-       K_P, 0, 0, Constants.K_THETA);
-thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-
-    SwerveControllerCommand swerveController = new SwerveControllerCommand
-    (null,
-     this.swerveDrive.getRobotPose(), 
-     swerveDrive.kinematics,
-     new PIDController(kPXControl, 0,0),
-     new PIDController(kPYControl, 0, 0),
-      thetaController,
-       swerveDrive::setSwerveModuleStates, 
-       swerveDrive);
 
     
     joySticks.driveButton(1).onTrue(new InstantCommand(()->pigeon.zeroYaw()));
