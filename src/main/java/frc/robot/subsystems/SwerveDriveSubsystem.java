@@ -3,6 +3,8 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 //import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -26,8 +28,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Pigeon2Handler;
 import frc.robot.util.Constants;
 
-// import java.util.Map;
-//test
 
 public class SwerveDriveSubsystem extends SubsystemBase {
 
@@ -197,6 +197,10 @@ public class SwerveDriveSubsystem extends SubsystemBase {
     public Pose2d getRobotPose()
     {
         return odometry.getPoseMeters();
+    }
+    public Supplier<Pose2d> getRobotPoseSupplier()
+    {
+        return odometry::getPoseMeters;
     }
 }
 

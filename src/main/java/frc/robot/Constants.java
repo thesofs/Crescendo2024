@@ -10,7 +10,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public class Constants {
     public static final double THROTTLE_MIN = 0.4;
     public static final double THROTTLE_MAX = 1.0;
-<<<<<<< HEAD
     public static final double MAX_ANGULAR_SPEED_RADIANS = Math.PI; //change 
     public static final double MAX_ANGULAR_SPEED_RADIANS_SQ = Math.PI; //change 
     public static final double GEAR_RATIO = 2;
@@ -28,10 +27,6 @@ public class Constants {
                                 K_P = 1;//change;
 
     public static final TrapezoidProfile.Constraints K_THETA =
-=======
-
-     public static final TrapezoidProfile.Constraints K_THETA =
->>>>>>> 05d8278a33cc9640189cc88bd715fe9f6b55d6a6
         new TrapezoidProfile.Constraints(
            MAX_ANGULAR_SPEED_RADIANS, MAX_ANGULAR_SPEED_RADIANS_SQ);
 }

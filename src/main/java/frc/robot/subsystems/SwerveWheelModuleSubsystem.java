@@ -86,7 +86,7 @@ public class SwerveWheelModuleSubsystem extends SubsystemBase {
 
       
       
-      double pidOut = pidController.calculate(currentEncoderValue, angle);
+      double pidOut = -pidController.calculate(currentEncoderValue, angle);
     
       
       angleMotor.set(pidOut);
@@ -171,7 +171,8 @@ public class SwerveWheelModuleSubsystem extends SubsystemBase {
   }
 
   private double getSpeedMotorSpeed(){
-    return this.speedMotor.getEncoder().getVelocity()*GEAR_RATIO;
+    return this.speedMotor.getEncoder().getVelocity()*GEAR_RATIO; 
+    //TODO: need to convert RPM of motor, to Translational speed of wheel (meters per second)
   }
 
   private double getSpeedMotorPosition(){

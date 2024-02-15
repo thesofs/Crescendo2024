@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.function.Consumer;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
@@ -96,9 +98,17 @@ double R = Math.sqrt(.5);
   public void teleopPeriodic(){
     double speedRate = SmartDashboard.getNumber("SpeedRate", 0.3)* MAX_RATE;
     double turnRate = SmartDashboard.getNumber("TurnRate", 1)* MAX_RATE/R;
+    SmartDashboard.putNumber("Front Right", swerveDrive.frontRight.getPosition());
+    SmartDashboard.putNumber("Front Left", swerveDrive.frontLeft.getPosition());
+    SmartDashboard.putNumber("Back Right", swerveDrive.backRight.getPosition());
+    SmartDashboard.putNumber("Back Left", swerveDrive.backLeft.getPosition());
+
+
+
+
    
 
-    //SmartDashboard.putNumber("driveJoyXR", getDriveJoyXR());
+    //SmartDashboard.putNumber("driveJoyXR", getDriveJoyXR()
     SmartDashboard.putNumber("drivejoyYL", getDriveJoyYL());
 
     double xval = getDriveJoyXR()*speedRate; // TODO: CHECK AXIS
@@ -137,7 +147,7 @@ double R = Math.sqrt(.5);
 
      double kPXControl = 1; //change
     double kPYControl = 1; //change
-    var thetaController = new ProfiledPIDController(Constants.K_P, 0, 0, Constants.K_THETA);
+    ProfiledPIDController thetaController = new ProfiledPIDController(Constants.K_P, 0, 0, Constants.K_THETA);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
 
@@ -151,19 +161,19 @@ double R = Math.sqrt(.5);
     }
     //m_drivebase.m_gyro.reset();
 
-     
+    Consumer<SwerveModuleState[]> moduleStateConsumer = (states) -> swerveDrive.setSwerveModuleStates(states);
 
     SwerveControllerCommand swerveController = new SwerveControllerCommand(
     trajectory,
-    swerveDrive.getRobotPose(), 
+    swerveDrive.getRobotPoseSupplier(), 
     swerveDrive.getKinematics(),
     new PIDController(kPXControl, 0, 0),
     new PIDController(kPYControl, 0, 0),
     thetaController,
-    swerveDrive::setSwerveModuleStates,
+    moduleStateConsumer,
     swerveDrive);
 
-
+    
 
     
     // Run path following command, then stop at the end.
