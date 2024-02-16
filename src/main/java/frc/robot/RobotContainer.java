@@ -8,6 +8,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
+import com.playingwithfusion.TimeOfFlight;
+import com.playingwithfusion.TimeOfFlight.RangingMode;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.RamseteController;
@@ -41,11 +47,16 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public final XboxController driveJoy = new XboxController(0);
   public final XboxController opJoy = new XboxController(1);
-  public JoystickContainer joySticks = new JoystickContainer(driveJoy,opJoy);
-  public Pigeon2Handler pigeon = new Pigeon2Handler();
-  public SwerveDriveSubsystem swerveDrive = new SwerveDriveSubsystem(pigeon);
+public JoystickContainer joySticks = new JoystickContainer(driveJoy,opJoy);
+  //public Pigeon2Handler pigeon = new Pigeon2Handler();
+  //public SwerveDriveSubsystem swerveDrive = new SwerveDriveSubsystem(pigeon);
   public static double slowmult = 1;
+  public TimeOfFlight flightSensor = new TimeOfFlight(40);
+  public CANSparkMax rightLaunch = new CANSparkMax(30,MotorType.kBrushless);
+  public CANSparkMax leftLaunch = new CANSparkMax(31,MotorType.kBrushless);
+  public CANSparkMax intakeSpark = new CANSparkMax(32,MotorType.kBrushless);
 
+  
   public double getDriveJoy(int axis){
     double raw = driveJoy.getRawAxis(axis);
     return Math.abs(raw) < 0.1 ? 0.0 : raw;
@@ -77,53 +88,87 @@ public class RobotContainer {
     return raw;
   }
 
-  public Trajectory trajectory;
+public Trajectory trajectory;
   public Command m_autonomousCommand;
   public SendableChooser<String> autoChooser = new SendableChooser<String>();
-
+  public Command Shoot;
 
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
+ 
 
-    
-    joySticks.driveButton(1).onTrue(new InstantCommand(()->pigeon.zeroYaw()));
+    joySticks.opButton(2).whileTrue(new InstantCommand(()->intake()));
+  
+   // joySticks.driveButton(1).onTrue(new InstantCommand(()->pigeon.zeroYaw()));
   }
+
+  
+  
 
   
 double MAX_RATE = 5.5; // m/s
 double R = Math.sqrt(.5);
-  public void teleopPeriodic(){
-    double speedRate = SmartDashboard.getNumber("SpeedRate", 0.3)* MAX_RATE;
-    double turnRate = SmartDashboard.getNumber("TurnRate", 1)* MAX_RATE/R;
-    SmartDashboard.putNumber("Front Right", swerveDrive.frontRight.getPosition());
-    SmartDashboard.putNumber("Front Left", swerveDrive.frontLeft.getPosition());
-    SmartDashboard.putNumber("Back Right", swerveDrive.backRight.getPosition());
-    SmartDashboard.putNumber("Back Left", swerveDrive.backLeft.getPosition());
+
+public void teleOperatedInit(){
+
+}
 
 
+public void Shoot(){
+  intakeSpark.set(-0.7);
+  rightLaunch.set(0.7);
+  leftLaunch.set(-0.7);
+}
 
 
-   
+public void intake(){
+  intakeSpark.set(-0.5);
+}
 
-    //SmartDashboard.putNumber("driveJoyXR", getDriveJoyXR()
-    SmartDashboard.putNumber("drivejoyYL", getDriveJoyYL());
+public void teleopPeriodic(){
+  double speedRate = SmartDashboard.getNumber("SpeedRate", 0.3)* MAX_RATE;
+  double turnRate = SmartDashboard.getNumber("TurnRate", 1)* MAX_RATE/R;
+  // SmartDashboard.putNumber("Front Right", swerveDrive.frontRight.getPosition());
+  //   SmartDashboard.putNumber("Front Left", swerveDrive.frontLeft.getPosition());
+  //   SmartDashboard.putNumber("Back Right", swerveDrive.backRight.getPosition());
+  //   SmartDashboard.putNumber("Back Left", swerveDrive.backLeft.getPosition());
+  SmartDashboard.putNumber("TOF", flightSensor.getRange());
 
-    double xval = getDriveJoyXR()*speedRate; // TODO: CHECK AXIS
-    double yval = -getDriveJoyYR()*speedRate;
-    double spinval = getDriveJoyXL() * turnRate;
 
-   
+   flightSensor.setRangingMode(RangingMode.Short,24);
+  
+    flightSensor.getRange();
+
+    intakeSpark.setIdleMode(IdleMode.kBrake);
+    rightLaunch.setIdleMode(IdleMode.kBrake);
+    leftLaunch.setIdleMode(IdleMode.kBrake);
+ 
+ if (flightSensor.getRange()<=275){
+    intakeSpark.set(0);
+    joySticks.opButton(1).whileTrue(new InstantCommand(()->Shoot()));
+
+
+  }
+
+  SmartDashboard.putNumber("drivejoyYL", getDriveJoyYL());
+
+  double xval = getDriveJoyXR()*speedRate; // TODO: CHECK AXIS
+  double yval = -getDriveJoyYR()*speedRate;
+  double spinval = getDriveJoyXL() * turnRate;
+
 
     //  swerveDrive.drive(new ChassisSpeeds(xval, yval, spinval));
-    swerveDrive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xval, yval, spinval, pigeon.getAngleDeg()));
+  //swerveDrive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xval, yval, spinval, pigeon.getAngleDeg()));
 
   
 
     
-  }
+}
+
+
 
 
   /**
@@ -143,48 +188,50 @@ double R = Math.sqrt(.5);
     return output;
    }
 
-   public Command pathFollow(String trajectoryJSON, boolean multiPath){
 
-     double kPXControl = 1; //change
-    double kPYControl = 1; //change
-    ProfiledPIDController thetaController = new ProfiledPIDController(Constants.K_P, 0, 0, Constants.K_THETA);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+  
+  //  public Command pathFollow(String trajectoryJSON, boolean multiPath){
+
+  //    double kPXControl = 1; //change
+  //   double kPYControl = 1; //change
+  //   ProfiledPIDController thetaController = new ProfiledPIDController(Constants.K_P, 0, 0, Constants.K_THETA);
+  //   thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
 
-    try {
-      Path testTrajectory = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-      trajectory = TrajectoryUtil.fromPathweaverJson(testTrajectory);
-    } catch (final IOException ex) {
+  //   try {
+  //     Path testTrajectory = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+  //     trajectory = TrajectoryUtil.fromPathweaverJson(testTrajectory);
+  //   } catch (final IOException ex) {
   
   
-      DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
-    }
-    //m_drivebase.m_gyro.reset();
+  //     DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+  //   }
+  //   //m_drivebase.m_gyro.reset();
 
-    Consumer<SwerveModuleState[]> moduleStateConsumer = (states) -> swerveDrive.setSwerveModuleStates(states);
+  //   Consumer<SwerveModuleState[]> moduleStateConsumer = (states) -> swerveDrive.setSwerveModuleStates(states);
 
-    SwerveControllerCommand swerveController = new SwerveControllerCommand(
-    trajectory,
-    swerveDrive.getRobotPoseSupplier(), 
-    swerveDrive.getKinematics(),
-    new PIDController(kPXControl, 0, 0),
-    new PIDController(kPYControl, 0, 0),
-    thetaController,
-    moduleStateConsumer,
-    swerveDrive);
-
-    
+  //   SwerveControllerCommand swerveController = new SwerveControllerCommand(
+  //   trajectory,
+  //   swerveDrive.getRobotPoseSupplier(), 
+  //   swerveDrive.getKinematics(),
+  //   new PIDController(kPXControl, 0, 0),
+  //   new PIDController(kPYControl, 0, 0),
+  //   thetaController,
+  //   moduleStateConsumer,
+  //   swerveDrive);
 
     
-    // Run path following command, then stop at the end.
-    // Robot.m_robotContainer.m_driveAuto.m_drive.feed();
-    //m_drivebase.resetOdometry(trajectory.getInitialPose());
+
     
-    if (!multiPath){
-      swerveDrive.resetPose();
-    } 
-    return swerveController;
-  }
+  //   // Run path following command, then stop at the end.
+  //   // Robot.m_robotContainer.m_driveAuto.m_drive.feed();
+  //   //m_drivebase.resetOdometry(trajectory.getInitialPose());
+    
+  //   if (!multiPath){
+  //     swerveDrive.resetPose();
+  //   } 
+  //   return swerveController;
+  // }
 
 
 
