@@ -28,11 +28,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.SwerveDriveSubsystem;
+import frc.robot.subsystems.intakeShoot;
+import frc.robot.subsystems.off;
+import frc.robot.subsystems.setSame;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
 
@@ -98,9 +104,19 @@ public Trajectory trajectory;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
+    joySticks.opButton(2).onTrue(new InstantCommand(()->intake()));
+
+    joySticks.opButton(1).onTrue(new ParallelRaceGroup(new setSame(), new WaitCommand(0.8).
+    andThen(new ParallelRaceGroup(new intakeShoot(), new WaitCommand(0.5).
+    andThen(new ParallelRaceGroup(new off(), new WaitCommand(0.3)))))));
+
+
+    joySticks.opButton(2).onFalse(new InstantCommand(()->intakeoff()));
+   // joySticks.opButton(1).onFalse(new InstantCommand(()->shootOff()));
+  
+
  
 
-    joySticks.opButton(2).whileTrue(new InstantCommand(()->intake()));
   
    // joySticks.driveButton(1).onTrue(new InstantCommand(()->pigeon.zeroYaw()));
   }
@@ -117,15 +133,27 @@ public void teleOperatedInit(){
 }
 
 
-public void Shoot(){
-  intakeSpark.set(-0.7);
-  rightLaunch.set(0.7);
-  leftLaunch.set(-0.7);
-}
+// public Command Shoot(){
+//   return new ParallelRaceGroup(new setSame(), new WaitCommand(1)).
+//   andThen(new intakeShoot());
+// }
+
+
 
 
 public void intake(){
-  intakeSpark.set(-0.5);
+  intakeSpark.set(-0.8);
+  leftLaunch.set(-0.5);
+  rightLaunch.set(0.5);
+}
+
+public void intakeoff(){
+  intakeSpark.set(0);
+}
+
+public void shootOff(){
+  rightLaunch.set(0);
+  leftLaunch.set(0);
 }
 
 public void teleopPeriodic(){
@@ -143,15 +171,20 @@ public void teleopPeriodic(){
     flightSensor.getRange();
 
     intakeSpark.setIdleMode(IdleMode.kBrake);
-    rightLaunch.setIdleMode(IdleMode.kBrake);
-    leftLaunch.setIdleMode(IdleMode.kBrake);
- 
- if (flightSensor.getRange()<=275){
+    rightLaunch.setIdleMode(IdleMode.kCoast);
+    leftLaunch.setIdleMode(IdleMode.kCoast);
+
+    if (flightSensor.getRange()<=70){
     intakeSpark.set(0);
-    joySticks.opButton(1).whileTrue(new InstantCommand(()->Shoot()));
+    }
 
 
-  }
+ 
+
+
+  //joySticks.opButton(1).whileFalse(new InstantCommand(()->shootOff()));
+ // joySticks.opButton(2).onFalse(new InstantCommand(()->intakeoff()));
+
 
   SmartDashboard.putNumber("drivejoyYL", getDriveJoyYL());
 
@@ -169,18 +202,6 @@ public void teleopPeriodic(){
 }
 
 
-
-
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-
    private static double convertThrottleInput(double input) {
     double output = ((Constants.THROTTLE_MAX - Constants.THROTTLE_MIN) / 2) * (-input + 1)
                     + Constants.THROTTLE_MIN; // input value is negative because the throttle input is reversed by
@@ -188,7 +209,7 @@ public void teleopPeriodic(){
     return output;
    }
 
-
+ 
   
   //  public Command pathFollow(String trajectoryJSON, boolean multiPath){
 
