@@ -104,6 +104,8 @@ public Trajectory trajectory;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
+    flightSensor.setRangeOfInterest(8, 8, 12, 12);
+
     joySticks.opButton(2).onTrue(new InstantCommand(()->intake()));
 
     joySticks.opButton(1).onTrue(new ParallelRaceGroup(new setSame(), new WaitCommand(0.8).
@@ -174,7 +176,7 @@ public void teleopPeriodic(){
     rightLaunch.setIdleMode(IdleMode.kCoast);
     leftLaunch.setIdleMode(IdleMode.kCoast);
 
-    if (flightSensor.getRange()<=70){
+    if (flightSensor.getRange()<=150){
     intakeSpark.set(0);
     }
 
