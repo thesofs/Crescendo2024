@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.intakeShoot;
 import frc.robot.subsystems.off;
@@ -53,9 +54,10 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public final XboxController driveJoy = new XboxController(0);
   public final XboxController opJoy = new XboxController(1);
-public JoystickContainer joySticks = new JoystickContainer(driveJoy,opJoy);
-  //public Pigeon2Handler pigeon = new Pigeon2Handler();
-  //public SwerveDriveSubsystem swerveDrive = new SwerveDriveSubsystem(pigeon);
+  public JoystickContainer joyStick = new JoystickContainer(driveJoy,opJoy);
+  public ArmSubsystem arm = new ArmSubsystem();
+  // public Pigeon2Handler pigeon = new Pigeon2Handler();
+  // public SwerveDriveSubsystem swerveDrive = new SwerveDriveSubsystem(pigeon);
   public static double slowmult = 1;
   public TimeOfFlight flightSensor = new TimeOfFlight(40);
   public CANSparkMax rightLaunch = new CANSparkMax(30,MotorType.kBrushless);
@@ -106,14 +108,14 @@ public Trajectory trajectory;
 
     flightSensor.setRangeOfInterest(8, 8, 12, 12);
 
-    joySticks.opButton(2).onTrue(new InstantCommand(()->intake()));
+    joyStick.opButton(2).onTrue(new InstantCommand(()->intake()));
 
-    joySticks.opButton(1).onTrue(new ParallelRaceGroup(new setSame(), new WaitCommand(0.8).
+    joyStick.opButton(1).onTrue(new ParallelRaceGroup(new setSame(), new WaitCommand(0.8).
     andThen(new ParallelRaceGroup(new intakeShoot(), new WaitCommand(0.5).
     andThen(new ParallelRaceGroup(new off(), new WaitCommand(0.3)))))));
 
 
-    joySticks.opButton(2).onFalse(new InstantCommand(()->intakeoff()));
+    joyStick.opButton(2).onFalse(new InstantCommand(()->intakeoff()));
    // joySticks.opButton(1).onFalse(new InstantCommand(()->shootOff()));
   
 
