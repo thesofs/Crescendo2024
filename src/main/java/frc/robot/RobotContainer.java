@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkBase.IdleMode;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.XboxController;
@@ -67,26 +69,39 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    arm.m_spark.setSmartCurrentLimit(20);
+    arm.m_spark2.setSmartCurrentLimit(20);
+    arm.m_spark.setIdleMode(IdleMode.kBrake);
+    arm.m_spark2.setIdleMode(IdleMode.kBrake);
     
     // arm code go here
-     joyStick.opButton(1)
-    .onTrue(new InstantCommand(()->arm.setGoal(0)));
+    //  joyStick.opButton(1)
+    // .onTrue(new InstantCommand(()->arm.setGoal(0)));
 
-     joyStick.opButton(2)
-    .onTrue(new InstantCommand(()->arm.setGoal(60)));
+    //  joyStick.opButton(2)
+    // .onTrue(new InstantCommand(()->arm.setGoal(60)));
 
 
   }
   public void init(){
     arm.enable();
-    arm.setGoal(30);
+   // arm.setGoal(30);
   }
 
   
 double MAX_RATE = 5.5; // m/s
 double R = Math.sqrt(.5);
 
+public void teleOperatedInit(){
+
+}
+
   public void teleopPeriodic(){
+    double intake = -4.5;
+    double subwoofer = 0;
+    double amp = 99;
+
     double speedRate = SmartDashboard.getNumber("SpeedRate", 0.3)* MAX_RATE;
     double turnRate = SmartDashboard.getNumber("TurnRate", 1)* MAX_RATE/R;
     SmartDashboard.putNumber("Arm Abs Enc", arm.getArmEncoderPos());
@@ -105,7 +120,23 @@ double R = Math.sqrt(.5);
     // swerveDrive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xval, yval, spinval, pigeon.getAngleDeg()));
 
     // AButton.onTrue(new InstantCommand(()->pigeon.zeroYaw()));
+
+
+    if(opJoy.getBButton()){
+      arm.setGoal(intake);
+      arm.enable();
+    }else if(opJoy.getYButton()){
+      arm.setGoal(amp);
+      arm.enable();
+    }else if(opJoy.getXButton()){
+      arm.setGoal(subwoofer);
+      arm.enable();
+    }
     
+  }
+
+  public void disableArm(){
+    arm.disable();
   }
 
   /**
