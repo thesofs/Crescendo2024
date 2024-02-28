@@ -76,17 +76,17 @@ public class RobotContainer {
     arm.m_spark2.setIdleMode(IdleMode.kBrake);
     
     // arm code go here
-    //  joyStick.opButton(1)
-    // .onTrue(new InstantCommand(()->arm.setGoal(0)));
+     joyStick.opButton(1)
+    .onTrue(new InstantCommand(()->arm.setGoal(0)));
 
-    //  joyStick.opButton(2)
-    // .onTrue(new InstantCommand(()->arm.setGoal(60)));
+     joyStick.opButton(2)
+    .onTrue(new InstantCommand(()->arm.setGoal(60)));
 
 
   }
   public void init(){
-    arm.enable();
-   // arm.setGoal(30);
+  // arm.enable(); //scary
+  arm.setGoal(0);
   }
 
   
@@ -106,7 +106,6 @@ public void teleOperatedInit(){
     double turnRate = SmartDashboard.getNumber("TurnRate", 1)* MAX_RATE/R;
     SmartDashboard.putNumber("Arm Abs Enc", arm.getArmEncoderPos());
 
-
     //SmartDashboard.putNumber("driveJoyXR", getDriveJoyXR());
     SmartDashboard.putNumber("drivejoyYL", getDriveJoyYL());
 
@@ -122,16 +121,16 @@ public void teleOperatedInit(){
     // AButton.onTrue(new InstantCommand(()->pigeon.zeroYaw()));
 
 
-    if(opJoy.getBButton()){
-      arm.setGoal(intake);
-      arm.enable();
-    }else if(opJoy.getYButton()){
-      arm.setGoal(amp);
-      arm.enable();
-    }else if(opJoy.getXButton()){
-      arm.setGoal(subwoofer);
-      arm.enable();
-    }
+    // if(opJoy.getBButton()){
+    //   arm.setGoal(intake);
+    //   arm.enable();
+    // }else if(opJoy.getYButton()){
+    //   arm.setGoal(amp);
+    //   arm.enable();
+    // }else if(opJoy.getXButton()){
+    //   arm.setGoal(subwoofer);
+    //   arm.enable();
+    // }
     
   }
 

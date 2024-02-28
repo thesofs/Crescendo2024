@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 
@@ -19,6 +20,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
   //public final RelativeEncoder encoder_arm = m_spark.getAlternateEncoder();
   //public final CANSparkMax hand_spark = new CANSparkMax(21,MotorType.kBrushless);
   public final RelativeEncoder alternateEncoder;
+  //public final DutyCycleEncoder dutyCycleEncoder;
   //private final double ENCODER_OFFSET = -1.416992;
   //encoder_arm.setDistancePerPulse(1.0 / 360.0 * 2.0 * Math.PI * 1.5);
 
@@ -41,6 +43,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
             // The motion profile constraints
             new TrapezoidProfile.Constraints(200, 200)));
     this.alternateEncoder = m_spark.getAlternateEncoder(8192);
+
     //m_spark2.follow(m_spark);
 
         
