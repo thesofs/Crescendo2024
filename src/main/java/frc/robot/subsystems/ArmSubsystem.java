@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -37,16 +38,19 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
     super(
         // The ProfiledPIDController used by the subsystem
         new ProfiledPIDController(
-            0.35,
-            0,
+            0.03,
+            0.0007,
             0,
             // The motion profile constraints
             new TrapezoidProfile.Constraints(200, 200)));
     this.alternateEncoder = m_spark.getAlternateEncoder(8192);
 
-    //m_spark2.follow(m_spark);
 
-        
+  
+    m_spark.setIdleMode(IdleMode.kBrake);
+    m_spark2.setIdleMode(IdleMode.kBrake);
+    
+    m_spark2.follow(m_spark,true);
 
 
   } // what is Kdt?
@@ -54,8 +58,11 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
     // Use the output (and optionally the setpoint) here
+      // double invertedOutput = output * -1;
+  SmartDashboard.putNumber("Arm Output", output);
+  // SmartDashboard.putNumber("Inverted Arm Output", invertedOutput);
    m_spark.set(output);
-   m_spark2.set(-output);
+   //m_spark2.set(output);
  
   // hand_spark.set(output);
   }
@@ -66,7 +73,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
 
    public double getArmEncoderPos(){ // arm deg
 
-   return (alternateEncoder.getPosition())*12/52*360; //Put encoder offset back in 
+   return (-alternateEncoder.getPosition())*12/52*360; //Put encoder offset back in 
 
  }
 

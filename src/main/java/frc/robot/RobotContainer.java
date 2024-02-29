@@ -70,22 +70,28 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    arm.m_spark.setSmartCurrentLimit(20);
-    arm.m_spark2.setSmartCurrentLimit(20);
-    arm.m_spark.setIdleMode(IdleMode.kBrake);
-    arm.m_spark2.setIdleMode(IdleMode.kBrake);
+   
     
     // arm code go here
      joyStick.opButton(1)
-    .onTrue(new InstantCommand(()->arm.setGoal(0)));
+    .onTrue(new InstantCommand(()->{
+      arm.enable();
+      arm.setGoal(0);
+      }));
 
      joyStick.opButton(2)
     .onTrue(new InstantCommand(()->arm.setGoal(60)));
 
+    joyStick.opButton(3)
+    .onTrue(new InstantCommand(()->arm.setGoal(80)));
+
+    joyStick.opButton(4)
+    .onTrue(new InstantCommand(()->arm.setGoal(90)));
+
 
   }
   public void init(){
-  // arm.enable(); //scary
+  //arm.enable(); //scary
   arm.setGoal(0);
   }
 
