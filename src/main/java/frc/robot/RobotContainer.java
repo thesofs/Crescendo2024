@@ -70,13 +70,12 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-   
     
     // arm code go here
      joyStick.opButton(1)
     .onTrue(new InstantCommand(()->{
-      arm.enable();
-      arm.setGoal(0);
+      //arm.enable();
+      arm.setGoal(10);
       }));
 
      joyStick.opButton(2)
@@ -91,8 +90,8 @@ public class RobotContainer {
 
   }
   public void init(){
-  //arm.enable(); //scary
-  arm.setGoal(0);
+  arm.enable(); //scary
+  //arm.setGoal(0);
   }
 
   

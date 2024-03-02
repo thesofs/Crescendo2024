@@ -4,8 +4,10 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -13,6 +15,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 
@@ -23,7 +26,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
   // public final RelativeEncoder encoder_arm = m_spark.getAlternateEncoder();
   // public final CANSparkMax hand_spark = new
   // CANSparkMax(21,MotorType.kBrushless);
-  public final RelativeEncoder alternateEncoder;
+  public final SparkAbsoluteEncoder absoluteEncoder;
   // public final DutyCycleEncoder dutyCycleEncoder;
   // private final double ENCODER_OFFSET = -1.416992;
   // encoder_arm.setDistancePerPulse(1.0 / 360.0 * 2.0 * Math.PI * 1.5);
@@ -33,17 +36,18 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
   // public final CANSparkMax spark = new CANSparkMax (14, MotorType.kBrushless);
   // public final RelativeEncoder encoderS = spark.getEncoder();
 
+  
   public ArmSubsystem() {
-
     super(
         // The ProfiledPIDController used by the subsystem
         new ProfiledPIDController(
-            0.03,
+            0.3, //Was 0.03 before
             0.0007,
             0,
             // The motion profile constraints
             new TrapezoidProfile.Constraints(200, 200)));
-    this.alternateEncoder = m_spark.getAlternateEncoder(8192);
+  //  this.alternateEncoder = m_spark.getAbsoluteEncoder(8192);
+    this.absoluteEncoder = m_spark.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     /**
      * double ka
      * The acceleration gain, in volt seconds² per radian.
@@ -55,23 +59,30 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
      * The velocity gain, in volt seconds per radian.
      */
     double kS = 0;
-    double kG = 0;
+    double kG = -0.06;
     double kV = 0;
+    
     this.armFFController = new ArmFeedforward(kS, kG, kV, 0);
+
+    
 
     m_spark.setIdleMode(IdleMode.kBrake);
     m_spark2.setIdleMode(IdleMode.kBrake);
+    m_spark.setSmartCurrentLimit(40);
+    m_spark2.setSmartCurrentLimit(40);
 
-    m_spark2.follow(m_spark, true);
+    m_spark2.follow(m_spark, false);
 
-  } // what is Kdt?
+  } 
 
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
     SmartDashboard.putNumber("Arm Output", output);
 
-    double feedforward = armFFController.calculate(setpoint.position,0);
-    m_spark.set(output+feedforward);
+    double feedforward = armFFController.calculate(setpoint.position,0); //setpoint.position
+    m_spark.set(output);
+    //-feedforward
+    SmartDashboard.putNumber("FF Output", feedforward);
    
   }
 
@@ -81,7 +92,7 @@ public class ArmSubsystem extends ProfiledPIDSubsystem {
 
   public double getArmEncoderPos() { // arm deg
 
-    return (-alternateEncoder.getPosition()) * 12 / 52 * 360; // Put encoder offset back in
+    return (absoluteEncoder.getPosition() * 360); // Put encoder offset back in
 
   }
 
