@@ -15,7 +15,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.Arm2;
+//import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 
 /**
@@ -30,7 +31,8 @@ public class RobotContainer {
   public final XboxController driveJoy = new XboxController(0);
   public final XboxController opJoy = new XboxController(1);
   public JoystickContainer joyStick = new JoystickContainer(driveJoy,opJoy);
-  public ArmSubsystem arm = new ArmSubsystem();
+  //public ArmSubsystem arm = new ArmSubsystem();
+  public Arm2 arm = new Arm2();
   // public Pigeon2Handler pigeon = new Pigeon2Handler();
   // public SwerveDriveSubsystem swerveDrive = new SwerveDriveSubsystem(pigeon);
   public static double slowmult = 1;
@@ -70,27 +72,27 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
+   // SmartDashboard.putNumber("voltage", arm.getVoltage());
+
     
-    // arm code go here
-     joyStick.opButton(1)
-    .onTrue(new InstantCommand(()->{
-      //arm.enable();
-      arm.setGoal(10);
-      }));
+    //arm code go here
+    //  joyStick.opButton(1)
+    // .onTrue(new InstantCommand(()->arm.setGoal(60)));
 
      joyStick.opButton(2)
-    .onTrue(new InstantCommand(()->arm.setGoal(60)));
+    .onTrue(new InstantCommand(()->arm.enable()));
 
-    joyStick.opButton(3)
-    .onTrue(new InstantCommand(()->arm.setGoal(80)));
+    // joyStick.opButton(3)
+    // .onTrue(new InstantCommand(()->arm.setGoal(80)));
 
-    joyStick.opButton(4)
-    .onTrue(new InstantCommand(()->arm.setGoal(90)));
+    // joyStick.opButton(4)
+    // .onTrue(new InstantCommand(()->arm.setGoal(90)));
 
-
+    // joyStick.opButton(1)
+    // .whileTrue(new InstantCommand(()->arm.arm_spark.set(-0.1)));
   }
   public void init(){
-  arm.enable(); //scary
+  //arm.enable(); //scary
   //arm.setGoal(0);
   }
 
@@ -109,7 +111,7 @@ public void teleOperatedInit(){
 
     double speedRate = SmartDashboard.getNumber("SpeedRate", 0.3)* MAX_RATE;
     double turnRate = SmartDashboard.getNumber("TurnRate", 1)* MAX_RATE/R;
-    SmartDashboard.putNumber("Arm Abs Enc", arm.getArmEncoderPos());
+    SmartDashboard.putNumber("Arm Abs Enc", arm.getMeasurement());
 
     //SmartDashboard.putNumber("driveJoyXR", getDriveJoyXR());
     SmartDashboard.putNumber("drivejoyYL", getDriveJoyYL());
