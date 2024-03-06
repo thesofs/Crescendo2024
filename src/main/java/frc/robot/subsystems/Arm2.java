@@ -11,20 +11,22 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
 
 public class Arm2 extends ProfiledPIDSubsystem {
   public final CANSparkMax arm_spark = new CANSparkMax(11,MotorType.kBrushless);
   public final CANSparkMax arm_spark2 = new CANSparkMax(12, MotorType.kBrushless);
   public final SparkAbsoluteEncoder absoluteEncoder = arm_spark.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
+  public double K_G = -0.05;
   /** Creates a new Arm2. */
   public Arm2() {
     super(
         // The ProfiledPIDController used by the subsystem
         new ProfiledPIDController(
             0.03,
-            0,
-            0,
+            0.0,
+            0.001,
             // The motion profile constraints
             new TrapezoidProfile.Constraints(200, 200)));
 
@@ -39,8 +41,10 @@ public class Arm2 extends ProfiledPIDSubsystem {
 
   @Override
   public void useOutput(double output, TrapezoidProfile.State setpoint) {
-
-    arm_spark.set(output);
+    double theta = getMeasurement() * 2*Math.PI/360;
+    arm_spark.set(-output + K_G* Math.cos(theta));
+    SmartDashboard.putNumber("Measurement", getMeasurement());
+    SmartDashboard.putNumber("output", output);
 
     // Use the output (and optionally the setpoint) here
   }

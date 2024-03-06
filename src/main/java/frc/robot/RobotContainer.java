@@ -74,16 +74,18 @@ public class RobotContainer {
 
    // SmartDashboard.putNumber("voltage", arm.getVoltage());
 
+    joyStick.opButton(1)
+    .onTrue(new InstantCommand(()->{
+      arm.enable();
+      arm.setGoal(5);
+    }));
     
     //arm code go here
-    //  joyStick.opButton(1)
-    // .onTrue(new InstantCommand(()->arm.setGoal(60)));
-
      joyStick.opButton(2)
-    .onTrue(new InstantCommand(()->arm.enable()));
-
-    // joyStick.opButton(3)
-    // .onTrue(new InstantCommand(()->arm.setGoal(80)));
+    .onTrue(new InstantCommand(()->arm.setGoal(60)));
+  
+    joyStick.opButton(3)
+    .onTrue(new InstantCommand(()->arm.setGoal(30)));
 
     // joyStick.opButton(4)
     // .onTrue(new InstantCommand(()->arm.setGoal(90)));
