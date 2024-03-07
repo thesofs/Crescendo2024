@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkBase.IdleMode;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Consumer;
@@ -35,7 +37,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.Arm2;
+//import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.intakeShoot;
 import frc.robot.subsystems.off;
@@ -55,7 +58,8 @@ public class RobotContainer {
   public final XboxController driveJoy = new XboxController(0);
   public final XboxController opJoy = new XboxController(1);
   public JoystickContainer joyStick = new JoystickContainer(driveJoy,opJoy);
-  public ArmSubsystem arm = new ArmSubsystem();
+  //public ArmSubsystem arm = new ArmSubsystem();
+  public Arm2 arm = new Arm2();
   // public Pigeon2Handler pigeon = new Pigeon2Handler();
   // public SwerveDriveSubsystem swerveDrive = new SwerveDriveSubsystem(pigeon);
   public static double slowmult = 1;
@@ -106,6 +110,20 @@ public Trajectory trajectory;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
+   // SmartDashboard.putNumber("voltage", arm.getVoltage());
+
+    joyStick.opButton(1)
+    .onTrue(new InstantCommand(()->{
+      arm.enable();
+      arm.setGoal(5);
+    }));
+    
+    //arm code go here
+     joyStick.opButton(2)
+    .onTrue(new InstantCommand(()->arm.setGoal(60)));
+  
+    joyStick.opButton(3)
+    .onTrue(new InstantCommand(()->arm.setGoal(30)));
     flightSensor.setRangeOfInterest(8, 8, 12, 12);
 
     joyStick.opButton(2).onTrue(new InstantCommand(()->intake()));
@@ -114,6 +132,8 @@ public Trajectory trajectory;
     andThen(new ParallelRaceGroup(new intakeShoot(), new WaitCommand(0.5).
     andThen(new ParallelRaceGroup(new off(), new WaitCommand(0.3)))))));
 
+    // joyStick.opButton(4)
+    // .onTrue(new InstantCommand(()->arm.setGoal(90)));
 
     joyStick.opButton(2).onFalse(new InstantCommand(()->intakeoff()));
    // joySticks.opButton(1).onFalse(new InstantCommand(()->shootOff()));
@@ -137,11 +157,6 @@ public void teleOperatedInit(){
 }
 
 
-// public Command Shoot(){
-//   return new ParallelRaceGroup(new setSame(), new WaitCommand(1)).
-//   andThen(new intakeShoot());
-// }
-
 
 
 
@@ -163,6 +178,9 @@ public void shootOff(){
 public void teleopPeriodic(){
   double speedRate = SmartDashboard.getNumber("SpeedRate", 0.3)* MAX_RATE;
   double turnRate = SmartDashboard.getNumber("TurnRate", 1)* MAX_RATE/R;
+   double intake = -4.5;
+    double subwoofer = 0;
+    double amp = 99;
   // SmartDashboard.putNumber("Front Right", swerveDrive.frontRight.getPosition());
   //   SmartDashboard.putNumber("Front Left", swerveDrive.frontLeft.getPosition());
   //   SmartDashboard.putNumber("Back Right", swerveDrive.backRight.getPosition());
@@ -204,7 +222,22 @@ public void teleopPeriodic(){
 
     
 }
+  public void roboInit(){
+    
+  }
+  public void disableArm(){
+    arm.disable();
+  }
 
+  /**
+   * Use this method to define your trigger->command mappings. Triggers can be created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
+   * predicate, or via the named factories in {@link
+   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
+   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * joysticks}.
+   */
 
    private static double convertThrottleInput(double input) {
     double output = ((Constants.THROTTLE_MAX - Constants.THROTTLE_MIN) / 2) * (-input + 1)
