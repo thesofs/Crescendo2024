@@ -141,10 +141,24 @@ public Trajectory trajectory;
     joyStick.opButton(5).onTrue(new InstantCommand(()->intakeoff()));
 
     //Right bumper: intake on
-    joyStick.opButton(6).onTrue(new InstantCommand(()->intakeoff()));
+    joyStick.opButton(6).onTrue(new InstantCommand(()->intake()));
 
     //Button 7, intake spin the other way
     //??
+
+    //swerve stuff, 9/23/24
+    //Example of binding a button to a command
+//     new Trigger(driverController::getAButton)
+//     .onTrue(new InstantCommand(() -> SwerveDriveSubsystem.Pigeon2Handler()));
+// }
+
+//     SwerveDriveSubsystem.InstantCommand(
+//             SwerveDriveSubsystemSubsystem.coast(
+//                 () -> MathUtil.applyDeadband(driverController.getLeftY(), 0.05),
+//                 () -> MathUtil.applyDeadband(driverController.getLeftX(), 0.05),
+//                 () -> MathUtil.applyDeadband(driverController.getRightX(), 0.05)
+//             )
+//         );
 
 
     //joyStick.opButton(2).onTrue(new InstantCommand(()->intake()));
@@ -284,29 +298,26 @@ public void teleopPeriodic(){
 
   //   Consumer<SwerveModuleState[]> moduleStateConsumer = (states) -> swerveDrive.setSwerveModuleStates(states);
 
-  //   SwerveControllerCommand swerveController = new SwerveControllerCommand(
-  //   trajectory,
-  //   swerveDrive.getRobotPoseSupplier(), 
-  //   swerveDrive.getKinematics(),
-  //   new PIDController(kPXControl, 0, 0),
-  //   new PIDController(kPYControl, 0, 0),
-  //   thetaController,
-  //   moduleStateConsumer,
-  //   swerveDrive);
+    // SwerveControllerCommand swerveController = new SwerveControllerCommand(
+    // trajectory,
+    // swerveDrive.getRobotPoseSupplier(), 
+    // swerveDrive.getKinematics(),
+    // new PIDController(kPXControl, 0, 0),
+    // new PIDController(kPYControl, 0, 0),
+    // thetaController,
+    // moduleStateConsumer,
+    // swerveDrive);
 
     
 
     
   //   // Run path following command, then stop at the end.
-  //   // Robot.m_robotContainer.m_driveAuto.m_drive.feed();
-  //   //m_drivebase.resetOdometry(trajectory.getInitialPose());
+    // Robot.m_robotContainer.m_driveAuto.m_drive.feed();
+    //m_drivebase.resetOdometry(trajectory.getInitialPose());
     
-  //   if (!multiPath){
-  //     swerveDrive.resetPose();
-  //   } 
-  //   return swerveController;
-  // }
+    // if (!multiPath){
+    //   swerveDrive.resetPose();
+    // } 
+    // return swerveController;
+  }
 
-
-
-}
