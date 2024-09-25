@@ -109,33 +109,51 @@ public Trajectory trajectory;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    configureButtonBindings();
 
-   // SmartDashboard.putNumber("voltage", arm.getVoltage());
+  }
+  
+  public void configureButtonBindings() {
+  // SmartDashboard.putNumber("voltage", arm.getVoltage());
 
+  //A button is pressed, enable arm and setgoal 3
     joyStick.opButton(1)
     .onTrue(new InstantCommand(()->{
       arm.enable();
-      arm.setGoal(5);
+      arm.setGoal(3);
     }));
-    
-    //arm code go here
-     joyStick.opButton(2)
-    .onTrue(new InstantCommand(()->arm.setGoal(60)));
-  
-    joyStick.opButton(3)
-    .onTrue(new InstantCommand(()->arm.setGoal(30)));
-    flightSensor.setRangeOfInterest(8, 8, 12, 12);
 
-    joyStick.opButton(2).onTrue(new InstantCommand(()->intake()));
-
-    joyStick.opButton(1).onTrue(new ParallelRaceGroup(new setSame(), new WaitCommand(0.8).
+    //B button is pressed, shoot into amp
+    joyStick.opButton(2).onTrue(new ParallelRaceGroup(new setSame(), new WaitCommand(0.8).
     andThen(new ParallelRaceGroup(new intakeShoot(), new WaitCommand(0.5).
     andThen(new ParallelRaceGroup(new off(), new WaitCommand(0.3)))))));
+    
+    //X button is pressed, setgoal 30
+    joyStick.opButton(3)
+    .onTrue(new InstantCommand(()->arm.setGoal(60)));
+  
+    //Y button is pressed, setgoal 100
+    joyStick.opButton(4)
+    .onTrue(new InstantCommand(()->arm.setGoal(100)));
+    flightSensor.setRangeOfInterest(8, 8, 12, 12);
+
+    //Left Bumper: intake off
+    joyStick.opButton(5).onTrue(new InstantCommand(()->intakeoff()));
+
+    //Right bumper: intake on
+    joyStick.opButton(6).onTrue(new InstantCommand(()->intakeoff()));
+
+    //Button 7, intake spin the other way
+    //??
+
+
+    //joyStick.opButton(2).onTrue(new InstantCommand(()->intake()));
+
 
     // joyStick.opButton(4)
     // .onTrue(new InstantCommand(()->arm.setGoal(90)));
 
-    joyStick.opButton(2).onFalse(new InstantCommand(()->intakeoff()));
+    // joyStick.opButton(2).onFalse(new InstantCommand(()->intakeoff()));
    // joySticks.opButton(1).onFalse(new InstantCommand(()->shootOff()));
   
 
@@ -144,8 +162,6 @@ public Trajectory trajectory;
   
    // joySticks.driveButton(1).onTrue(new InstantCommand(()->pigeon.zeroYaw()));
   }
-
-  
   
 
   
